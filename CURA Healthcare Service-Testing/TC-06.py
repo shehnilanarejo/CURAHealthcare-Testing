@@ -1,0 +1,52 @@
+#TC06 Verify if an appointment can be booked without selecting any option and directly clicking 'Book Appointment'.
+
+import time
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+
+# Initialize WebDriver
+driver = webdriver.Chrome()
+
+# Open the CURA Healthcare website
+driver.get("https://katalon-demo-cura.herokuapp.com/")
+
+# Click on the "Make Appointment" button
+driver.find_element(By.ID, "btn-make-appointment").click()
+
+# Enter valid username and password
+driver.find_element(By.NAME, "username").send_keys("John Doe")
+driver.find_element(By.NAME, "password").send_keys("ThisIsNotAPassword")
+
+# Click the login button
+driver.find_element(By.ID, "btn-login").click()
+
+# Wait for a few seconds to ensure login process completes
+time.sleep(3)
+
+# Validate the login by checking the page title
+act_title = driver.title
+exp_title = "CURA Healthcare Service"
+
+# Check if login was successful
+if act_title == exp_title:
+    print("Successfully logged in")
+else:
+    print("Failed to log in")
+
+# Click "Book Appointment" without selecting any option
+driver.find_element(By.ID, "btn-book-appointment").click()
+
+# Check for validation error messages
+try:
+    facility_error = driver.find_element(By.ID, "combo_facility").get_attribute("validationMessage")
+    date_error = driver.find_element(By.ID, "txt_visit_date").get_attribute("validationMessage")
+
+    if facility_error:
+        print(f"Facility Error: {facility_error}")
+    if date_error:
+        print(f"Date Error: {date_error}")
+except:
+    print("No validation error messages detected.")
+
+# Close the browser
+driver.quit()
